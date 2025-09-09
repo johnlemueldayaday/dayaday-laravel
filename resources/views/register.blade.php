@@ -11,7 +11,8 @@
         <input type="text" name="name" placeholder="Name" class="w-full mb-3 p-2 border rounded">
         <input type="email" name="email" placeholder="Email" class="w-full mb-3 p-2 border rounded">
         <input type="password" name="password" placeholder="Password" class="w-full mb-3 p-2 border rounded">
-        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">Register</button>
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded mb-3">Register</button>
+        <a href="/dashboard" class="block text-center w-full bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300 transition">Back to Dashboard</a>
     </form>
 </body>
 </html>
