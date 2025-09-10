@@ -1,31 +1,30 @@
-
-
 <?php
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| Define application routes here.
 |
 */
 
+
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
+// Home page (protected, after login)
 Route::get('/home', function () {
     return view('home');
-});
+})->middleware('auth')->name('home');
 
-// Dashboard (protected + named)
+// Dashboard (protected)
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware('auth')->name('dashboard');
@@ -39,38 +38,45 @@ Route::get('/login', function () {
 Route::post('/login', function (Request $request) {
     $credentials = $request->only('email', 'password');
 
-    if (Auth::attempt($credentials)) {
+    if (Auth::attempt($credentials, $request->has('remember'))) {
         $request->session()->regenerate();
-        return redirect()->route('dashboard');
+        return redirect()->route('home');
     }
 
     return back()->withErrors([
         'email' => 'Invalid credentials.',
     ]);
 });
+
 // Show Register Form
 Route::get('/register', function () {
     return view('register');
 })->name('register');
 
-// Handle Register Form Submission
+// Handle Register
 Route::post('/register', function (Request $request) {
-    // Basic validation (for demonstration)
     $validated = $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email',
         'password' => 'required|string|min:6',
     ]);
 
-    // Create user (if User model exists)
-    $user = App\Models\User::create([
+    $user = User::create([
         'name' => $validated['name'],
         'email' => $validated['email'],
         'password' => bcrypt($validated['password']),
     ]);
 
-    // Log the user in
     Auth::login($user);
 
-    return redirect()->route('dashboard');
+    // Redirect to home page after registration
+    return redirect()->route('home');
 });
+
+// Handle Logout
+Route::post('/logout', function (Request $request) {
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    return redirect()->route('welcome'); // 👈 This sends user to welcome.blade.php
+})->name('logout');
