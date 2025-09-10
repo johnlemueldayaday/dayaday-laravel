@@ -34,7 +34,7 @@
                     <a href="#" class="text-gray-800 hover:text-blue-600 transition">Students</a>
                     <a href="#" class="text-gray-800 hover:text-blue-600 transition">Reports</a>
                     <a href="#" class="text-gray-800 hover:text-blue-600 transition">Settings</a>
-                    <a href="#" class="text-gray-800 hover:text-blue-600 transition">Profile</a>
+                    <a href="{{ route('profile.edit') }}" class="text-gray-800 hover:text-blue-600">Profile</a>
                 </div>
 
                 <!-- Logout -->
@@ -109,29 +109,8 @@
         </div>
     </main>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <!-- Styles -->
     <style>
-        body {
-            opacity: 0;
-            transition: opacity 1.4s ease-in-out;
-        }
-        body.fade-in { opacity: 1; }
-
         :root { --nav-h: 64px; }
         .hero-wrap { height: calc(100vh - var(--nav-h)); }
         html, body { height:100%; }
@@ -151,23 +130,8 @@
         }
     </style>
 
-    <!-- Fade Transition + Carousel Script -->
+    <!-- Carousel Script -->
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            document.body.classList.add("fade-in");
-            document.querySelectorAll("a").forEach(link => {
-                if (link.hostname === window.location.hostname) {
-                    link.addEventListener("click", e => {
-                        e.preventDefault();
-                        document.body.style.opacity = "0";
-                        setTimeout(() => {
-                            window.location.href = link.href;
-                        }, 400);
-                    });
-                }
-            });
-        });
-
         const slides = document.querySelectorAll('.carousel-item');
         const dots = document.querySelectorAll('.dot');
         let currentIndex = 0;

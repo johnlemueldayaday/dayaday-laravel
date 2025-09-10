@@ -35,7 +35,7 @@
                     <a href="#" class="text-gray-800 hover:text-blue-600 transition">Students</a>
                     <a href="#" class="text-gray-800 hover:text-blue-600 transition">Reports</a>
                     <a href="#" class="text-gray-800 hover:text-blue-600 transition">Settings</a>
-                    <a href="#" class="text-gray-800 hover:text-blue-600 transition">Profile</a>
+                    <a href="{{ route('profile.edit') }}" class="text-gray-800 hover:text-blue-600 transition">Profile</a>
                 </div>
 
                 <!-- Right: Logout -->

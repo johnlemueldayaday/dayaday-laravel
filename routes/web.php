@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,7 +14,6 @@ use App\Models\User;
 | Define application routes here.
 |
 */
-
 
 Route::get('/', function () {
     return view('welcome');
@@ -78,5 +78,11 @@ Route::post('/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    return redirect()->route('welcome'); // 👈 This sends user to welcome.blade.php
+    return redirect()->route('welcome'); 
 })->name('logout');
+
+// -------------------- PROFILE ROUTES --------------------
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+});
