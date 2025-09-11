@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Navbar */
+.navbar {
+    @apply bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50;
+}
+.navbar-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-3;
+}
+.navbar-logo img {
+    @apply h-14 w-auto object-contain;
+}
+.navbar-links {
+    @apply flex items-center gap-10 text-lg font-medium;
+}
+.navbar-links a {
+    @apply text-gray-800 hover:text-blue-600 transition;
+}
+.navbar-logout button {
+    @apply px-4 py-2 bg-[#243b80] text-white rounded-md hover:bg-red-700 transition;
+}
