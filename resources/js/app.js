@@ -1,15 +1,23 @@
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes React and other helpers. It's a great starting point while
- * building robust, powerful web applications using React + Laravel.
- */
-
-require('./bootstrap');
+import './bootstrap';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 
 /**
- * Next, we will create a fresh React component instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
+ * Import your React components here
  */
+import Example from './components/Example';
+import Welcome from './components/Welcome';
 
-require('./components/Example');
+/**
+ * Mount Example component if element exists
+ */
+if (document.getElementById('example')) {
+    createRoot(document.getElementById('example')).render(<Example />);
+}
+
+/**
+ * Mount Welcome component if element exists
+ */
+if (document.getElementById('app')) {
+    createRoot(document.getElementById('app')).render(<Welcome />);
+}

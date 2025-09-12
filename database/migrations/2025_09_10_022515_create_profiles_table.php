@@ -10,14 +10,13 @@ class CreateProfilesTable extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id'); // safer than foreignId at first
-
+            $table->unsignedBigInteger('user_id'); 
             $table->string('first_name')->nullable();
             $table->string('middle_name')->nullable();
             $table->string('last_name')->nullable();
             $table->enum('sex', ['Male', 'Female'])->nullable();
             $table->string('nationality')->nullable();
-            $table->string('id_number')->nullable(); // removed unique()
+            $table->string('id_number')->nullable(); 
             $table->string('contact_number')->nullable();
             $table->text('address')->nullable();
             $table->string('religion')->nullable();

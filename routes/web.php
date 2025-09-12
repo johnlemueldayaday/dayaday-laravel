@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StudentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,40 +17,29 @@ use App\Http\Controllers\ProfileController;
 |
 */
 
+// Welcome
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-// Home page (protected, after login)
+// Home page 
 Route::get('/home', function () {
     return view('home');
 })->middleware('auth')->name('home');
 
-// Dashboard (protected)
+// Dashboard 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware('auth')->name('dashboard');
 
-// Show Login Form
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+// -------------------- AUTH ROUTES --------------------
 
-// Handle Login
-Route::post('/login', function (Request $request) {
-    $credentials = $request->only('email', 'password');
+// Login (controller-based)
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    if (Auth::attempt($credentials, $request->has('remember'))) {
-        $request->session()->regenerate();
-        return redirect()->route('home');
-    }
-
-    return back()->withErrors([
-        'email' => 'Invalid credentials.',
-    ]);
-});
-
-// Show Register Form
+// Register Form
 Route::get('/register', function () {
     return view('register');
 })->name('register');
@@ -73,16 +64,14 @@ Route::post('/register', function (Request $request) {
     return redirect()->route('home');
 });
 
-// Handle Logout
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-    return redirect()->route('welcome'); 
-})->name('logout');
-
 // -------------------- PROFILE ROUTES --------------------
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+// -------------------- STUDENT ROUTES --------------------
+Route::middleware('auth')->group(function () {
+    Route::get('/students', [StudentController::class, 'index'])->name('students.index'); // list
+    Route::get('/students/{id}', [StudentController::class, 'show'])->name('students.show'); // single view
 });
