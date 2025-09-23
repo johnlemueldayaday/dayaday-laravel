@@ -58185,7 +58185,7 @@ function Example() {
           case 0:
             _context2.p = 0;
             _context2.n = 1;
-            return fetch('/fetch-data');
+            return fetch('/api/fetch-data');
           case 1:
             response = _context2.v;
             if (!response.ok) {

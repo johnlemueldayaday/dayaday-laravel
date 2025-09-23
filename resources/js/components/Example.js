@@ -32,7 +32,7 @@ function Example() {
 
     const handleFetchData = async () => {
         try {
-            const response = await fetch('/fetch-data');
+            const response = await fetch('/api/fetch-data');
             if (response.ok) {
                 const result = await response.json();
                 setData(result);

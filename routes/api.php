@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DataController;
@@ -18,3 +17,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('/save-data', [DataController::class, 'store']);
+Route::get('/fetch-data', [DataController::class, 'fetchData']);
+Route::put('/update-data/{id}', [DataController::class, 'update']);
+Route::delete('/delete-data/{id}', [DataController::class, 'destroy']);
