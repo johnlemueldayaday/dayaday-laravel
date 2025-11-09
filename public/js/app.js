@@ -67272,14 +67272,28 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 function Profile(_ref) {
+  var _user$profile, _user$profile2, _user$profile3, _user$profile4, _user$profile5, _user$profile6, _user$profile7, _user$profile8, _user$profile9, _user$profile0, _user$profile1;
   var user = _ref.user;
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
-      name: (user === null || user === void 0 ? void 0 : user.name) || '',
-      email: (user === null || user === void 0 ? void 0 : user.email) || '',
+  // Initialize with common profile fields (try multiple possible locations on the user object)
+  var initial = {
+    first_name: (user === null || user === void 0 ? void 0 : user.first_name) || (user === null || user === void 0 || (_user$profile = user.profile) === null || _user$profile === void 0 ? void 0 : _user$profile.first_name) || (user !== null && user !== void 0 && user.name ? user.name.split(' ')[0] : '') || '',
+    middle_name: (user === null || user === void 0 ? void 0 : user.middle_name) || (user === null || user === void 0 || (_user$profile2 = user.profile) === null || _user$profile2 === void 0 ? void 0 : _user$profile2.middle_name) || '',
+    last_name: (user === null || user === void 0 ? void 0 : user.last_name) || (user === null || user === void 0 || (_user$profile3 = user.profile) === null || _user$profile3 === void 0 ? void 0 : _user$profile3.last_name) || (user !== null && user !== void 0 && user.name ? user.name.split(' ').slice(-1)[0] : '') || '',
+    email: (user === null || user === void 0 ? void 0 : user.email) || '',
+    phone: (user === null || user === void 0 || (_user$profile4 = user.profile) === null || _user$profile4 === void 0 ? void 0 : _user$profile4.phone) || '',
+    department: (user === null || user === void 0 || (_user$profile5 = user.profile) === null || _user$profile5 === void 0 ? void 0 : _user$profile5.department) || '',
+    position: (user === null || user === void 0 || (_user$profile6 = user.profile) === null || _user$profile6 === void 0 ? void 0 : _user$profile6.position) || '',
+    employee_id: (user === null || user === void 0 || (_user$profile7 = user.profile) === null || _user$profile7 === void 0 ? void 0 : _user$profile7.employee_id) || '',
+    address: (user === null || user === void 0 || (_user$profile8 = user.profile) === null || _user$profile8 === void 0 ? void 0 : _user$profile8.address) || '',
+    birthdate: (user === null || user === void 0 || (_user$profile9 = user.profile) === null || _user$profile9 === void 0 ? void 0 : _user$profile9.birthdate) || '',
+    gender: (user === null || user === void 0 || (_user$profile0 = user.profile) === null || _user$profile0 === void 0 ? void 0 : _user$profile0.gender) || '',
+    avatar_url: (user === null || user === void 0 || (_user$profile1 = user.profile) === null || _user$profile1 === void 0 ? void 0 : _user$profile1.avatar) || (user === null || user === void 0 ? void 0 : user.avatar) || ''
+  };
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(_objectSpread(_objectSpread({}, initial), {}, {
       currentPassword: '',
       newPassword: '',
       confirmPassword: ''
-    }),
+    })),
     _useState2 = _slicedToArray(_useState, 2),
     formData = _useState2[0],
     setFormData = _useState2[1];
@@ -67287,43 +67301,105 @@ function Profile(_ref) {
     _useState4 = _slicedToArray(_useState3, 2),
     message = _useState4[0],
     setMessage = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(initial.avatar_url || '/images/default-avatar.png'),
+    _useState6 = _slicedToArray(_useState5, 2),
+    avatarPreview = _useState6[0],
+    setAvatarPreview = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState8 = _slicedToArray(_useState7, 2),
+    avatarFile = _useState8[0],
+    setAvatarFile = _useState8[1];
   var handleChange = function handleChange(e) {
-    setFormData(_objectSpread(_objectSpread({}, formData), {}, _defineProperty({}, e.target.name, e.target.value)));
+    var _e$target = e.target,
+      name = _e$target.name,
+      value = _e$target.value;
+    setFormData(function (prev) {
+      return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, name, value));
+    });
+  };
+  var handleFileChange = function handleFileChange(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    setAvatarFile(file);
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      return setAvatarPreview(ev.target.result);
+    };
+    reader.readAsDataURL(file);
   };
   var handleSubmit = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(e) {
-      var _document$querySelect, response, _t;
+      var response, _document$querySelect, fd, _document$querySelect2, payload, data, _t;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.p = _context.n) {
           case 0:
             e.preventDefault();
+            setMessage('');
             _context.p = 1;
+            if (!avatarFile) {
+              _context.n = 3;
+              break;
+            }
+            fd = new FormData();
+            Object.keys(formData).forEach(function (key) {
+              // skip empty password fields if not provided
+              if ((key === 'currentPassword' || key === 'newPassword' || key === 'confirmPassword') && !formData[key]) return;
+              fd.append(key, formData[key]);
+            });
+            fd.append('avatar', avatarFile);
             _context.n = 2;
             return fetch('/profile/update', {
               method: 'POST',
               headers: {
-                'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': ((_document$querySelect = document.querySelector('meta[name="csrf-token"]')) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.content) || ''
               },
-              body: JSON.stringify(formData)
+              body: fd
             });
           case 2:
             response = _context.v;
-            if (response.ok) {
-              setMessage('Profile updated successfully!');
-            } else {
-              setMessage('Failed to update profile.');
-            }
-            _context.n = 4;
+            _context.n = 5;
             break;
           case 3:
-            _context.p = 3;
+            // JSON fallback
+            payload = _objectSpread({}, formData);
+            _context.n = 4;
+            return fetch('/profile/update', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': ((_document$querySelect2 = document.querySelector('meta[name="csrf-token"]')) === null || _document$querySelect2 === void 0 ? void 0 : _document$querySelect2.content) || ''
+              },
+              body: JSON.stringify(payload)
+            });
+          case 4:
+            response = _context.v;
+          case 5:
+            if (!response.ok) {
+              _context.n = 6;
+              break;
+            }
+            setMessage('Profile updated successfully!');
+            _context.n = 8;
+            break;
+          case 6:
+            _context.n = 7;
+            return response.json()["catch"](function () {
+              return {};
+            });
+          case 7:
+            data = _context.v;
+            setMessage(data.message || 'Failed to update profile.');
+          case 8:
+            _context.n = 10;
+            break;
+          case 9:
+            _context.p = 9;
             _t = _context.v;
             setMessage('An error occurred. Please try again.');
-          case 4:
+          case 10:
             return _context.a(2);
         }
-      }, _callee, null, [[1, 3]]);
+      }, _callee, null, [[1, 9]]);
     }));
     return function handleSubmit(_x) {
       return _ref2.apply(this, arguments);
@@ -67340,95 +67416,231 @@ function Profile(_ref) {
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("main", {
       className: "flex-1 p-8",
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-        className: "max-w-2xl mx-auto",
+        className: "max-w-4xl mx-auto",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           className: "bg-white p-8 rounded-lg shadow-md",
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
-            className: "text-3xl font-bold text-gray-800 mb-8",
-            children: "Profile Settings"
+            className: "text-3xl font-bold text-gray-800 mb-6",
+            children: "Profile"
           }), message && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            className: "mb-6 p-4 rounded-lg ".concat(message.includes('success') ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300'),
+            className: "mb-6 p-4 rounded-lg ".concat(message.toLowerCase().includes('success') ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300'),
             children: message
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("form", {
             onSubmit: handleSubmit,
             className: "space-y-6",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-              className: "pb-6 border-b",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h2", {
-                className: "text-lg font-semibold text-gray-800 mb-4",
-                children: "Personal Information"
+              className: "grid grid-cols-1 lg:grid-cols-3 gap-6 items-start",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+                className: "col-span-1",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  className: "flex flex-col items-center",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+                    src: avatarPreview,
+                    alt: "avatar",
+                    className: "h-32 w-32 rounded-full object-cover mb-4"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                    className: "text-sm text-gray-600 mb-2",
+                    children: "Profile Photo"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    type: "file",
+                    accept: "image/*",
+                    onChange: handleFileChange
+                  })]
+                })
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-                className: "mb-4",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-                  className: "block text-sm font-medium text-gray-700 mb-2",
-                  children: "Name"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-                  type: "text",
-                  name: "name",
-                  value: formData.name,
-                  onChange: handleChange,
-                  className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-                  className: "block text-sm font-medium text-gray-700 mb-2",
-                  children: "Email"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-                  type: "email",
-                  name: "email",
-                  value: formData.email,
-                  onChange: handleChange,
-                  className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className: "col-span-1 lg:col-span-2",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h2", {
+                  className: "text-lg font-semibold text-gray-800 mb-4",
+                  children: "Personal Information"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  className: "grid grid-cols-1 md:grid-cols-3 gap-4 mb-4",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      className: "block text-sm font-medium text-gray-700 mb-2",
+                      children: "First name"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                      name: "first_name",
+                      value: formData.first_name,
+                      onChange: handleChange,
+                      className: "w-full px-3 py-2 border rounded"
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      className: "block text-sm font-medium text-gray-700 mb-2",
+                      children: "Middle name"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                      name: "middle_name",
+                      value: formData.middle_name,
+                      onChange: handleChange,
+                      className: "w-full px-3 py-2 border rounded"
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      className: "block text-sm font-medium text-gray-700 mb-2",
+                      children: "Last name"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                      name: "last_name",
+                      value: formData.last_name,
+                      onChange: handleChange,
+                      className: "w-full px-3 py-2 border rounded"
+                    })]
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  className: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      className: "block text-sm font-medium text-gray-700 mb-2",
+                      children: "Email"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                      name: "email",
+                      type: "email",
+                      value: formData.email,
+                      onChange: handleChange,
+                      className: "w-full px-3 py-2 border rounded"
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      className: "block text-sm font-medium text-gray-700 mb-2",
+                      children: "Phone"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                      name: "phone",
+                      value: formData.phone,
+                      onChange: handleChange,
+                      className: "w-full px-3 py-2 border rounded"
+                    })]
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  className: "grid grid-cols-1 md:grid-cols-3 gap-4 mb-4",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      className: "block text-sm font-medium text-gray-700 mb-2",
+                      children: "Department"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                      name: "department",
+                      value: formData.department,
+                      onChange: handleChange,
+                      className: "w-full px-3 py-2 border rounded"
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      className: "block text-sm font-medium text-gray-700 mb-2",
+                      children: "Position"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                      name: "position",
+                      value: formData.position,
+                      onChange: handleChange,
+                      className: "w-full px-3 py-2 border rounded"
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      className: "block text-sm font-medium text-gray-700 mb-2",
+                      children: "Employee ID"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                      name: "employee_id",
+                      value: formData.employee_id,
+                      onChange: handleChange,
+                      className: "w-full px-3 py-2 border rounded"
+                    })]
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  className: "grid grid-cols-1 md:grid-cols-2 gap-4 mb-4",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      className: "block text-sm font-medium text-gray-700 mb-2",
+                      children: "Birthdate"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                      name: "birthdate",
+                      type: "date",
+                      value: formData.birthdate,
+                      onChange: handleChange,
+                      className: "w-full px-3 py-2 border rounded"
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                      className: "block text-sm font-medium text-gray-700 mb-2",
+                      children: "Gender"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("select", {
+                      name: "gender",
+                      value: formData.gender,
+                      onChange: handleChange,
+                      className: "w-full px-3 py-2 border rounded",
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+                        value: "",
+                        children: "Select"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+                        value: "male",
+                        children: "Male"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+                        value: "female",
+                        children: "Female"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+                        value: "other",
+                        children: "Other"
+                      })]
+                    })]
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  className: "mb-4",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                    className: "block text-sm font-medium text-gray-700 mb-2",
+                    children: "Address"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    name: "address",
+                    value: formData.address,
+                    onChange: handleChange,
+                    className: "w-full px-3 py-2 border rounded"
+                  })]
                 })]
               })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-              className: "pb-6",
+              className: "pb-6 border-t pt-6",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h2", {
                 className: "text-lg font-semibold text-gray-800 mb-4",
                 children: "Change Password"
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-                className: "mb-4",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-                  className: "block text-sm font-medium text-gray-700 mb-2",
-                  children: "Current Password"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-                  type: "password",
-                  name: "currentPassword",
-                  value: formData.currentPassword,
-                  onChange: handleChange,
-                  className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-                className: "mb-4",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-                  className: "block text-sm font-medium text-gray-700 mb-2",
-                  children: "New Password"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-                  type: "password",
-                  name: "newPassword",
-                  value: formData.newPassword,
-                  onChange: handleChange,
-                  className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
-                  className: "block text-sm font-medium text-gray-700 mb-2",
-                  children: "Confirm New Password"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
-                  type: "password",
-                  name: "confirmPassword",
-                  value: formData.confirmPassword,
-                  onChange: handleChange,
-                  className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className: "grid grid-cols-1 md:grid-cols-3 gap-4",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                    className: "block text-sm font-medium text-gray-700 mb-2",
+                    children: "Current Password"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    name: "currentPassword",
+                    type: "password",
+                    value: formData.currentPassword,
+                    onChange: handleChange,
+                    className: "w-full px-3 py-2 border rounded"
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                    className: "block text-sm font-medium text-gray-700 mb-2",
+                    children: "New Password"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    name: "newPassword",
+                    type: "password",
+                    value: formData.newPassword,
+                    onChange: handleChange,
+                    className: "w-full px-3 py-2 border rounded"
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                    className: "block text-sm font-medium text-gray-700 mb-2",
+                    children: "Confirm New Password"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                    name: "confirmPassword",
+                    type: "password",
+                    value: formData.confirmPassword,
+                    onChange: handleChange,
+                    className: "w-full px-3 py-2 border rounded"
+                  })]
                 })]
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-              type: "submit",
-              className: "w-full px-6 py-3 text-white font-semibold rounded-lg hover:opacity-90 transition",
-              style: {
-                background: '#243b80'
-              },
-              children: "Save Changes"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+              className: "flex justify-end",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+                type: "submit",
+                className: "px-6 py-3 bg-[#243b80] text-white rounded-md hover:opacity-95 transition",
+                children: "Save Changes"
+              })
             })]
           })]
         })
