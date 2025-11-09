@@ -9,7 +9,7 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        return view('login'); // your login.blade.php
+        return view('welcome'); // React SPA - Router handles /login route
     }
 
     public function login(Request $request)

@@ -29,7 +29,7 @@
                 <div class="hidden md:flex gap-10 text-lg font-medium">
                     <a href="{{ route('dashboard') }}" class="text-gray-800 hover:text-blue-600">Dashboard</a>
                     <a href="#" class="text-gray-800 hover:text-blue-600">Faculty</a>
-                    <a href="{{ route('students.index') }}" class="text-gray-800 hover:text-blue-600">Students</a>
+                    <a href="#" class="text-gray-800 hover:text-blue-600">Students</a>
                     <a href="#" class="text-gray-800 hover:text-blue-600">Reports</a>
                     <a href="#" class="text-gray-800 hover:text-blue-600">Settings</a>
                     <a href="{{ route('profile.edit') }}" class="text-gray-800 hover:text-blue-600">Profile</a>

@@ -17,21 +17,6 @@ use App\Http\Controllers\StudentController;
 |
 */
 
-// Welcome
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
-
-// Home page 
-Route::get('/home', function () {
-    return view('home');
-})->middleware('auth')->name('home');
-
-// Dashboard 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth')->name('dashboard');
-
 // -------------------- AUTH ROUTES --------------------
 
 // Login (controller-based)
@@ -41,7 +26,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Register Form
 Route::get('/register', function () {
-    return view('register');
+    return view('welcome');
 })->name('register');
 
 // Handle Register
@@ -66,12 +51,43 @@ Route::post('/register', function (Request $request) {
 
 // -------------------- PROFILE ROUTES --------------------
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-// -------------------- STUDENT ROUTES --------------------
-Route::middleware('auth')->group(function () {
-    Route::get('/students', [StudentController::class, 'index'])->name('students.index'); // list
-    Route::get('/students/{id}', [StudentController::class, 'show'])->name('students.show'); // single view
+// -------------------- API ROUTES (for React to fetch data) --------------------
+Route::middleware('auth')->prefix('api')->group(function () {
+    Route::get('/students', [StudentController::class, 'index']);
+    Route::get('/students/{id}', [StudentController::class, 'show']);
 });
+
+// -------------------- SPA ROUTES (All return welcome.blade.php for React Router) --------------------
+Route::middleware('auth')->group(function () {
+    Route::get('/home', function () {
+        return view('welcome');
+    })->name('home');
+
+    Route::get('/dashboard', function () {
+        return view('welcome');
+    })->name('dashboard');
+
+    Route::get('/students', function () {
+        return view('welcome');
+    })->name('students.index');
+
+    Route::get('/students/{id}', function () {
+        return view('welcome');
+    })->name('students.show');
+
+    Route::get('/faculty', function () {
+        return view('welcome');
+    })->name('faculty');
+
+    Route::get('/profile', function () {
+        return view('welcome');
+    })->name('profile.edit');
+});
+
+// Root route - redirect based on auth
+Route::get('/', function () {
+    return view('welcome');
+})->name('welcome');
